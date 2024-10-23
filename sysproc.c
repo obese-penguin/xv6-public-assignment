@@ -89,3 +89,81 @@ sys_uptime(void)
   release(&tickslock);
   return xticks;
 }
+
+extern int SYS_CALL_LENGTH;
+extern int syscall_count[25];
+
+char* syscall_names[25] = {
+    "empty_syscall", 
+    "fork",
+    "exit",
+    "wait", 
+    "pipe", 
+    "read", 
+    "kill", 
+    "exec", 
+    "fstat", 
+    "chdir", 
+    "dup", 
+    "getpid", 
+    "sbrk", 
+    "sleep", 
+    "uptime", 
+    "open", 
+    "write", 
+    "mknod", 
+    "unlink", 
+    "link", 
+    "mkdir", 
+    "close", 
+    "print_count",
+    "toggle",
+    "add"};
+
+int
+sys_print_count(void)
+{
+    // if trace is on
+    
+    for(int i = 1; i < SYS_CALL_LENGTH; i++)
+    {
+        if(syscall_count[i] != 0)
+        {
+            cprintf("%s %d\n", syscall_names[i], syscall_count[i]);
+        }
+    }
+
+    return 0;
+}
+
+int TRACE = 0;
+
+int
+sys_toggle(void)
+{
+    if(TRACE == 0)
+    {
+        for(int i = 0; i < SYS_CALL_LENGTH; i++)
+        {
+            syscall_count[i] = 0;
+        }
+
+       TRACE = 1; 
+    }
+
+    else
+        TRACE = 0;
+
+    cprintf("Trace state: %d\n", TRACE);
+    return TRACE;
+}
+
+int sys_add(void)
+{
+    int a; int b;
+    argint(0, &a);
+    argint(1, &b);
+    
+    // cprintf("%d + %d = %d\n", a, b, a+b);
+    return a+b; 
+}
